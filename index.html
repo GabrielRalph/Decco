@@ -1,105 +1,369 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Decco</title>
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <meta name="Acc" content="Acc something">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900">
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@317&display=swap" rel="stylesheet">
   <script src= "https://www.gstatic.com/firebasejs/7.14.4/firebase.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
-  <body>
-    <svg version="1.1" id="logo" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-    	 viewBox="0 0 1500 373.6" style="enable-background:new 0 0 1500 373.6;" xml:space="preserve">
-    <path style="fill:#DB1F26;" d="M157.7,6c-45.5-13.7-85.8-0.9-94.9,7.3S16.5,211.9,2.9,293.8s24.6,75.6,53.7,79.2
-    	c29.1,3.6,168.5-9.1,204.2-141.2C296.4,99.8,203.2,19.7,157.7,6z M189.6,225.5c-33.7,84.7-140.3,96.6-140.3,96.6
-    	c10-28.2,20.2-300,27.3-300.6C171.4,13.3,223.3,140.8,189.6,225.5z"/>
-    <path style="fill:#DB1F26;" d="M544.5,234.7c16.4-17.2,19.6-78.5-1.7-124.6c-21.3-46.2-66-78.3-124.8-35.3s-91.5,142.1-81.6,205.4
-    	c9.9,63.3,43.5,93.4,96,93.4c52.4,0,88.1-32.7,95-53.4c0,0-27.2,24.9-57.9,24.9S376,328,381.4,233.5
-    	C381.4,233.5,528.1,251.9,544.5,234.7z M471.7,92.6c64.4,0,61.5,116.5,51.7,123.6c-9.8,7.1-142,6.4-142,6.4S407.3,92.6,471.7,92.6z"
-    	/>
-    <path style="fill:#DB1F26;" d="M863.7,135.2c0,0-19-80.6-75.4-80.6c-56.4,0-107.5,48.5-129.1,133.1c-21.6,84.6,10.9,185,74.7,185.9
-    	c44.9,0.6,81.6-19.9,115.4-97.4c0,0-82.7,87.7-125.9,51s-25.4-188.6,31.6-230.6C812,54.6,863.7,135.2,863.7,135.2z"/>
-    <path style="fill:#DB1F26;" d="M1175.5,135.2c0,0-19-80.6-75.4-80.6S992.6,103.1,971,187.7s10.9,185,74.7,185.9
-    	c44.9,0.6,81.6-19.9,115.4-97.4c0,0-82.7,87.7-125.9,51s-25.4-188.6,31.6-230.6C1123.8,54.6,1175.5,135.2,1175.5,135.2z"/>
-    <path style="fill:#DB1F26;" d="M1437.2,55.8c-66.3-7.8-133.1,61-160.5,130.9c-27.4,69.9-18.6,186.9,87.9,186.9S1500,255.3,1500,206
-    	S1483.1,61.1,1437.2,55.8z M1388.7,340.1c-76.2,0-85.9-76.5-72.9-130.2c13-53.7,65.1-140.5,118.2-140.5c39,0,51.5,86.4,51.5,128.3
-    	S1464.9,340.1,1388.7,340.1z"/>
-    </svg>
-    <div>
-      <h1>Need</h1>
-      <p>
-        Freelancers are not supported like employees of a company, their income is entirely dependent on whether they can find clients willing to pay for their services and or products. This instability hinders a young freelancers ability to function within society. Further more, as a freelancers income is so heavily dependent on clients, performing lower paying work to communities is often not economically viable.
-      </p>
+  <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+  <script src = "https://www.svg.plus/load.js"></script>
+  <script src = "./main.js"></script>
+  <script>
+  let el = document.createElement('div');
+  class WaveLoader extends PlusElement{
+    constructor(el){
+      super(el);
+
+
+      //Bounding box
+      this.style = {
+        position: 'fixed',
+        top: '-5px',
+        left: '-5px',
+        right: '-5px',
+        bottom: '-5px',
+        'z-index': '1000',
+      };
+
+      // Svg to contain wave
+      this.path = this.createChild('svg', {
+        viewBox: '-1 -2 8.3 4',
+        style: {
+          position: 'fixed',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+        }
+
+      // Wave path
+      }).createChild('path', {
+        fill: 'none',
+        'stroke-linecap': 'round',
+        'stroke-width': 0.4
+      })
+
+      //Main propertys
+      this.color = 'black'
+      this.background = 'white'
+
+      // Show on creation
+      this.hide = false;
+    }
+
+    //Setters and Getters for main properties
+    set background(color){
+      this.style = {
+        background: color
+      }
+    }
+    get background(){
+      return this.getProperty('color')
+    }
+
+    set color(color){
+      this.path.props = {
+        stroke: color
+      }
+    }
+    get color(){
+      return this.path.getAttribute('stroke');
+    }
+
+    //Wave animater frame function
+    __wave_animater(t0){
+      let x0 = t0/400;
+      this.path.clear();
+      let y = (xi, x0i) => {
+        let yal = (Math.sin(xi + x0i) + Math.sin(xi * 1.61 * Math.sin(xi/5))/5)/2;
+        let vec = new Vector(xi, yal);
+
+        vec.round();
+        return vec
+      };
+      this.path.M(y(0, x0));
+      for(var x = 0; x < 2*Math.PI; x += 0.05){
+        this.path.L(y(x, x0));
+      }
+    }
+
+    //Setters and Getters for wave loader states
+    set hide(val){
+      if (!('_hide' in this)) this._hide = !val;
+      if (val && (!this._hide)){
+        this.style = {
+          display: 'none'
+        }
+        this.move = false;
+        this._hide = true;
+      }else if ((!val) && this._hide){
+        this.style = {
+          display: 'block'
+        }
+        this.move = true;
+        this._hide = false;
+      }
+    }
+    get hide(){
+      return this._hide
+    }
+
+    set move(val){
+      if (!('_move' in this)){ this._move = !val;}
+      if (val && !this._move){
+        let next = (t0) => {
+          this.__wave_animater(t0);
+          if (this._move){
+            window.requestAnimationFrame(next);
+          }
+        }
+        window.requestAnimationFrame(next);
+        this._move = true;
+      }else{
+        this._move = false
+      }
+    }
+    get move(){
+      return this.move;
+    }
+  }
+  document.body.appendChild(el)
+  let waveloader = new WaveLoader(el);
+
+  </script>
+  <title>Deqo</title>
+
+
+</head>
+<body>
+  <div id = "add">
+    +
+  </div>
+<div id = "main">
+  <div id = "template" style = "display: none;">
+    <div id = "home">
+
     </div>
-    <div>
-      <h1>What Deco does</h1>
-      <p>
-        Deco is a non for profit charity aimed at improving the lives of young freelancers. Deco will provide a steady income to the individuals it supports by distributing income, providing jobs, and funding community projects.
-      </p>
+    <div id = "contact_us">
+      dad@gmail.com
     </div>
-    <div>
-      <h1>How does Deco’s income support function</h1>
-      <p>
-        Deco requires the cooperation with the individuals it supports. Individuals must use Deco’s invoice system to collect payments from clients. The three transaction modes are:
-        <ul>
-          <li>
-            An individual bills the client, then donates a portion (if applicable) to Deco (either through direct debit or bank transfer as charity donations).
-          </li>
-          <li>
-            Both the individual (as income) and Deco (as charity donations) bill the client.
-          </li>
-          <li>
-            Deco bills the client (as charity donations).
-          </li>
-        </ul>
-        Deco then algorithmically distributes its income and returns it back to the individuals it supports (as charity benefits).
-      </p>
-    </div>
-    <div>
-      <h1>Deco Jobs</h1>
-      <p>
-        Is a portal that allows freelancers to browse for available work and offer work (when they are already working or different skills are required). Jobs will be maintained by Deco’s members (admin).
-      </p>
-    </div>
-    <div>
-      <h1>Deco Portfolios</h1>
-      <p>
-        Is a web portfolio template that individuals can use to showcase their skills and previous projects to the public. All portfolios can also accessed through a central page publicised by Deco.
-      </p>
-    </div>
-    <div>
+    <div id = "about_us">
+      <div>
+        <h1>Need</h1>
+        <p>
+          Freelancers are not supported like employees of a company, their income is entirely dependent on whether they can find clients willing to pay for their services and or products. This instability hinders a young freelancers ability to function within society. Further more, as a freelancers income is so heavily dependent on clients, performing lower paying work to communities is often not economically viable.
+        </p>
+      </div>
+      <div>
+        <h1>What Deco does</h1>
+        <p>
+          Deco is a non for profit charity aimed at improving the lives of young freelancers. Deco will provide a steady income to the individuals it supports by distributing income, providing jobs, and funding community projects.
+        </p>
+      </div>
+      <div>
+        <h1>How does Deco’s income support function</h1>
+        <p>
+          Deco requires the cooperation with the individuals it supports. Individuals must use Deco’s invoice system to collect payments from clients. The three transaction modes are:
+          <ul>
+            <li>
+              An individual bills the client, then donates a portion (if applicable) to Deco (either through direct debit or bank transfer as charity donations).
+            </li>
+            <li>
+              Both the individual (as income) and Deco (as charity donations) bill the client.
+            </li>
+            <li>
+              Deco bills the client (as charity donations).
+            </li>
+          </ul>
+          Deco then algorithmically distributes its income and returns it back to the individuals it supports (as charity benefits).
+        </p>
+      </div>
+      <div>
+        <h1>Deco Jobs</h1>
+        <p>
+          Is a portal that allows freelancers to browse for available work and offer work (when they are already working or different skills are required). Jobs will be maintained by Deco’s members (admin).
+        </p>
+      </div>
+      <div>
+        <h1>Deco Portfolios</h1>
+        <p>
+          Is a web portfolio template that individuals can use to showcase their skills and previous projects to the public. All portfolios can also accessed through a central page publicised by Deco.
+        </p>
+      </div>
+      <div>
         <h1>Deco Accounts</h1>
         <p>
           Is a portal for Deco members to monitor the financial position of Deco. Accounts will use a majority approval system to ensure that any decision is approved by the board. This will also prevent malicious attacks to sensitive information and miss use of the ATO and bank account controlled by Deco’s server.
         </p>
+      </div>
+
     </div>
-  </body>
+    <div id = "people">
+      <h1>{{test}}</h1>
+    </div>
+  </div>
+</div>
+</body>
 
-  <script type="text/javascript">
-  </script>
+<script>
 
-  <style>
-    body{
-      max-width: 50em;
-      padding: 1em;
-      font-family: 'Roboto';
-      margin: auto;
-    }
-    div{
-      margin-bottom: 2em;
-      box-shadow: 2px 2px 10px 10px rgba(0,0,0,0.1);
-      padding: 1em;
-      border-radius: 1em;
-    }
-    h1{
-      margin-top: 0;
-    }
-    #logo{
-      margin: 3em auto;
-      width: 20em;
 
-      display: block
+let test_vue_page = new Vue({
+  el: "#people",
+  data: {
+    test: 'this is a vue page for people'
+  }
+})
+window.onload = () => {
+  let panels = new Windows('main');
+
+  let home = document.getElementById('home');
+  firebase.database().ref('deqo_logos').on('value', (e) => {
+    home.innerHTML = '';
+    let svgs = e.val();
+    for (var key in svgs){
+      home.innerHTML += `<div>
+        ${svgs[key]}
+        <img src = "https://scontent-syd2-1.xx.fbcdn.net/v/t1.15752-9/s2048x2048/120902857_1248579315502824_4129131009186514728_n.jpg?_nc_cat=101&_nc_sid=ae9488&_nc_ohc=l9EIq95HSDQAX9F6SoX&_nc_ht=scontent-syd2-1.xx&tp=7&oh=d9143396533a01a56822483e6eef552a&oe=5F8119E0"/>
+      </div>`
     }
-  </style>
+    waveloader.hide = true;
+  })
+}
+let add = document.getElementById('add');
+add.onclick = async function() {
+  let content = null
+  try{
+    content = await navigator.clipboard.readText();
+  }catch(e){
+    throw e
+    return
+  }
+  let svg = null
+  try{
+    svg = new SvgElement(content)
+  }catch(e){
+    alert('Invalid SVG');
+    throw e;
+    return
+  }
+  document.getElementById('home').appendChild(svg.el);
+  svg.fireSave(['deqo_logos']);
+}
+</script>
+<style type="text/css">
+#add{
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  margin: 1em;
+  display: inline;
+  background: #ffffff88;
+  border-radius: 50px;
+  line-height: 2em;
+  width: 2em;
+  text-align: center;
+  cursor: pointer;
+  z-index: 10000;
+}
+body{
+  --nav-height: min(5vw, 30px);
+  font-family: 'Oswald', sans-serif;
+  /* background: #111129; */
+}
+::-webkit-scrollbar{
+  display: none;
+}
+#home svg{
+  margin: 0 auto;
+  width: 61.8vw;
+  max-width: 400px;
+  text-align: center;
+  padding: 5vw 0;
+}
+#home img{
+  width: 100%;
+  margin-bottom: 20vw;
+}
+#home div{
+  display: inline-grid;
+}
+#home{
+  display: grid;
+  height: 100%;
+  padding-left: 15vw;
+  padding-right: 15vw;
+}
+#about_us{
+  padding-left: 15vw;
+  padding-right: 15vw;
+}
+
+.window{
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  padding-top: var(--nav-height);
+  color: black;
+  overflow: scroll;
+}
+
+#navigator{
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 50%;
+  z-index: 100;
+  /* background: #fff8; */
+  padding: 0;
+  font-size: 1.3em;
+}
+#navigator > div{
+  position: relative;
+}
+#navigator table{
+  width: 100%;
+  text-align: center;
+  border-collapse: collapse;
+  padding: 0;
+}
+#navigator td{
+  height: var(--nav-height);
+  padding: 0;
+}
+#navigator h1{
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin: 0;
+  /* background: white; */
+  /* color: white; */
+  line-height: var(--nav-height);
+  font-size:  min(3vw, 36px);
+  padding-right: calc(var(--nav-height)/2);
+  cursor: pointer;
+  transform: translate(-100%, 0);
+}
+/*
+@media screen and (max-width: 900px) {
+  #navigator a {
+     font-size: 18px;
+  }
+} */
+#navigator a{
+  font-family: Roboto;
+  font-weight: 500;
+  text-decoration: none;
+  color: black;
+  font-size: min(2vw, 18px);
+  line-height: var(--nav-height);
+  text-transform: uppercase;
+      display: grid;
+}
+</style>
+
+
 </html>
