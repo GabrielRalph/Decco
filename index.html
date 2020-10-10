@@ -11,125 +11,125 @@
   <script src = "https://www.svg.plus/load.js"></script>
   <script src = "./main.js"></script>
   <script>
-  let el = document.createElement('div');
-  class WaveLoader extends PlusElement{
-    constructor(el){
-      super(el);
+    let el = document.createElement('div');
+    class WaveLoader extends PlusElement{
+      constructor(el){
+        super(el);
 
 
-      //Bounding box
-      this.style = {
-        position: 'fixed',
-        top: '-5px',
-        left: '-5px',
-        right: '-5px',
-        bottom: '-5px',
-        'z-index': '1000',
-      };
-
-      // Svg to contain wave
-      this.path = this.createChild('svg', {
-        viewBox: '-1 -2 8.3 4',
-        style: {
+        //Bounding box
+        this.style = {
           position: 'fixed',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-        }
+          top: '-5px',
+          left: '-5px',
+          right: '-5px',
+          bottom: '-5px',
+          'z-index': '1000',
+        };
 
-      // Wave path
-      }).createChild('path', {
-        fill: 'none',
-        'stroke-linecap': 'round',
-        'stroke-width': 0.4
-      })
-
-      //Main propertys
-      this.color = 'black'
-      this.background = 'white'
-
-      // Show on creation
-      this.hide = false;
-    }
-
-    //Setters and Getters for main properties
-    set background(color){
-      this.style = {
-        background: color
-      }
-    }
-    get background(){
-      return this.getProperty('color')
-    }
-
-    set color(color){
-      this.path.props = {
-        stroke: color
-      }
-    }
-    get color(){
-      return this.path.getAttribute('stroke');
-    }
-
-    //Wave animater frame function
-    __wave_animater(t0){
-      let x0 = t0/400;
-      this.path.clear();
-      let y = (xi, x0i) => {
-        let yal = (Math.sin(xi + x0i) + Math.sin(xi * 1.61 * Math.sin(xi/5))/5)/2;
-        let vec = new Vector(xi, yal);
-
-        vec.round();
-        return vec
-      };
-      this.path.M(y(0, x0));
-      for(var x = 0; x < 2*Math.PI; x += 0.05){
-        this.path.L(y(x, x0));
-      }
-    }
-
-    //Setters and Getters for wave loader states
-    set hide(val){
-      if (!('_hide' in this)) this._hide = !val;
-      if (val && (!this._hide)){
-        this.style = {
-          display: 'none'
-        }
-        this.move = false;
-        this._hide = true;
-      }else if ((!val) && this._hide){
-        this.style = {
-          display: 'block'
-        }
-        this.move = true;
-        this._hide = false;
-      }
-    }
-    get hide(){
-      return this._hide
-    }
-
-    set move(val){
-      if (!('_move' in this)){ this._move = !val;}
-      if (val && !this._move){
-        let next = (t0) => {
-          this.__wave_animater(t0);
-          if (this._move){
-            window.requestAnimationFrame(next);
+        // Svg to contain wave
+        this.path = this.createChild('svg', {
+          viewBox: '-1 -2 8.3 4',
+          style: {
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
           }
+
+        // Wave path
+        }).createChild('path', {
+          fill: 'none',
+          'stroke-linecap': 'round',
+          'stroke-width': 0.4
+        })
+
+        //Main propertys
+        this.color = 'black'
+        this.background = 'white'
+
+        // Show on creation
+        this.hide = false;
+      }
+
+      //Setters and Getters for main properties
+      set background(color){
+        this.style = {
+          background: color
         }
-        window.requestAnimationFrame(next);
-        this._move = true;
-      }else{
-        this._move = false
+      }
+      get background(){
+        return this.getProperty('color')
+      }
+
+      set color(color){
+        this.path.props = {
+          stroke: color
+        }
+      }
+      get color(){
+        return this.path.getAttribute('stroke');
+      }
+
+      //Wave animater frame function
+      __wave_animater(t0){
+        let x0 = t0/400;
+        this.path.clear();
+        let y = (xi, x0i) => {
+          let yal = (Math.sin(xi + x0i) + Math.sin(xi * 1.61 * Math.sin(xi/5))/5)/2;
+          let vec = new Vector(xi, yal);
+
+          vec.round();
+          return vec
+        };
+        this.path.M(y(0, x0));
+        for(var x = 0; x < 2*Math.PI; x += 0.05){
+          this.path.L(y(x, x0));
+        }
+      }
+
+      //Setters and Getters for wave loader states
+      set hide(val){
+        if (!('_hide' in this)) this._hide = !val;
+        if (val && (!this._hide)){
+          this.style = {
+            display: 'none'
+          }
+          this.move = false;
+          this._hide = true;
+        }else if ((!val) && this._hide){
+          this.style = {
+            display: 'block'
+          }
+          this.move = true;
+          this._hide = false;
+        }
+      }
+      get hide(){
+        return this._hide
+      }
+
+      set move(val){
+        if (!('_move' in this)){ this._move = !val;}
+        if (val && !this._move){
+          let next = (t0) => {
+            this.__wave_animater(t0);
+            if (this._move){
+              window.requestAnimationFrame(next);
+            }
+          }
+          window.requestAnimationFrame(next);
+          this._move = true;
+        }else{
+          this._move = false
+        }
+      }
+      get move(){
+        return this.move;
       }
     }
-    get move(){
-      return this.move;
-    }
-  }
-  document.body.appendChild(el)
-  let waveloader = new WaveLoader(el);
+    document.body.appendChild(el)
+    let waveloader = new WaveLoader(el);
 
   </script>
   <title>Deqo</title>
@@ -197,7 +197,7 @@
           Is a portal for Deqo members to monitor the financial position of Deqo. Accounts will use a majority approval system to ensure that any decision is approved by the board. This will also prevent malicious attacks to sensitive information and miss use of the ATO and bank account controlled by Deqo’s server.
         </p>
       </div>
-      <img src = "./logo_k2.png"/>
+
     </div>
     <div id = "people">
       <h1>{{test}}</h1>
@@ -225,7 +225,7 @@ window.onload = () => {
     for (var key in svgs){
       home.innerHTML += `<div>
         ${svgs[key]}
-        <img src = "https://scontent-syd2-1.xx.fbcdn.net/v/t1.15752-9/s2048x2048/120902857_1248579315502824_4129131009186514728_n.jpg?_nc_cat=101&_nc_sid=ae9488&_nc_ohc=l9EIq95HSDQAX9F6SoX&_nc_ht=scontent-syd2-1.xx&tp=7&oh=d9143396533a01a56822483e6eef552a&oe=5F8119E0"/>
+        <img src = "./bottle_yellow.jpg"/>
       </div>`
     }
     setTimeout(() => {
@@ -277,7 +277,7 @@ body{
 ::-webkit-scrollbar{
   display: none;
 }
-#home svg{
+#home > div svg:first-child, #home > div img:first-child{
   margin: 0 auto;
   width: 61.8vw;
   max-width: 400px;
