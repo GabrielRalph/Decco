@@ -219,9 +219,17 @@ class GradCircle extends SvgElement{
   constructor(el){
     super(el)
     this.r = 5;
+    this.stem_height = 1.3 * this.r;
+                                // o deg
+    this.stem_angle = Math.PI* ( 60 ) /180
+    this.precision = 40;
+
     this.done = 0;
     this.props = {viewBox: `-${this.r + 1} -${this.r + 7} ${this.r*2*4 + 5} ${this.r*2 + 14}`}
+
+
     this.build();
+
     this.move = true;
     this.onDone = null;
   }
@@ -261,44 +269,42 @@ class GradCircle extends SvgElement{
   build(){
     this.groups = [];
 
-    this.groups.push(this.create_stem(new Vector(0, 0), 0.8, this.r*1.5, 1));
+    this.groups.push(this.create_stem(new Vector(0, 0)));
     this.groups.push(this.create_grad_circ(new Vector(this.r*2 + 1, 0), new Vector(this.r, 0), -1));
-    this.groups.push(this.create_stem(new Vector(this.r*4 + 2, 0), 0.8, this.r*1.5, -1));
+    this.groups.push(this.create_stem(new Vector(this.r*4 + 2, 0), -1));
     this.groups.push(this.create_grad_circ(new Vector(this.r*6 + 3, 0), new Vector(0,-this.r), 1));
     this.wave();
   }
 
-  create_stem(center, angle, height, dir = 1, g){
-    g = g == null ? this.createChild('g'): g;
+  create_stem(center, dir = 1){
+    let g = this.createChild('g');
 
-    let zero = new Vector(0, 0);
-    let top_edge = new Vector(this.r, dir * -1 * this.r*Math.cos(angle));
+    let top_left = new Vector(0, - dir * this.stem_height);
+    top_left = center.add(top_left);
+
+    let top_right = new Vector(this.r, - dir * this.stem_height * (1 + Math.cos(this.stem_angle)));
+    top_right = center.add(top_right);
+
     let path = g.createChild('path', {fill: '#202020'});
 
-    let h = 0;
+    let h1 = 0;
+    let dh1 = this.stem_height * (1 + Math.cos(this.stem_angle)) / this.precision;
+    let h2 = 0;
+    let dh2 = this.stem_height / this.precision;
 
     let next_1 = () => {
       path.clear();
-      path.M(center.addV(-1 * dir *height)).l(top_edge).l(zero.addV(dir*h)).l(zero.sub(top_edge)).Z();
-
-      if (h < height){
-        h += 0.15;
+      console.log('e');
+      path.M(top_left).L(top_right).L(top_right.addV(h1*dir).round(5)).L(top_left.addV(h2*dir).round(5)).Z();
+      if (h2 == this.stem_height){
+            this.create_grad_circ(center.addV(-0.05*dir), new Vector(this.r, 0), dir, g.createChild('g'))
+      }else{
+        h1 = Math.min(h1 + dh1, this.stem_height * (1 + Math.cos(this.stem_angle)));
+        h2 = Math.min(h2 + dh2, this.stem_height);
         window.requestAnimationFrame(next_1);
-      }else{
-        window.requestAnimationFrame(next_2);
       }
     }
 
-    let next_2 = () => {
-      path.clear();
-      path.M(center.addV(-1 * dir * height)).l(top_edge).l(zero.addV(dir * h)).L(center).Z();
-      if (h < height - dir * top_edge.y){
-        h += 0.15;
-        window.requestAnimationFrame(next_2);
-      }else{
-        this.create_grad_circ(center.addV(-1*dir), new Vector(this.r, 0), dir, g.createChild('g'))
-      }
-    }
     window.requestAnimationFrame(next_1);
     return g
 
