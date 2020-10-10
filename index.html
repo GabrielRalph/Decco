@@ -197,7 +197,7 @@
           Is a portal for Deqo members to monitor the financial position of Deqo. Accounts will use a majority approval system to ensure that any decision is approved by the board. This will also prevent malicious attacks to sensitive information and miss use of the ATO and bank account controlled by Deqo’s server.
         </p>
       </div>
-
+      <img src = "./logo_k2.png"/>
     </div>
     <div id = "people">
       <h1>{{test}}</h1>
@@ -228,7 +228,9 @@ window.onload = () => {
         <img src = "https://scontent-syd2-1.xx.fbcdn.net/v/t1.15752-9/s2048x2048/120902857_1248579315502824_4129131009186514728_n.jpg?_nc_cat=101&_nc_sid=ae9488&_nc_ohc=l9EIq95HSDQAX9F6SoX&_nc_ht=scontent-syd2-1.xx&tp=7&oh=d9143396533a01a56822483e6eef552a&oe=5F8119E0"/>
       </div>`
     }
-    waveloader.hide = true;
+    setTimeout(() => {
+      waveloader.hide = true;
+    }, 20)
   })
 }
 let add = document.getElementById('add');
