@@ -330,19 +330,14 @@ class GradCircle extends SvgElement{
 
 }
 
-let logo = new GradCircle('gradcirc');
 
-let test_vue_page = new Vue({
-  el: "#people",
-  data: {
-    test: 'this is a vue page for people'
-  }
-})
+
 window.onload = () => {
   let panels = new Windows('main');
 
   let home = document.getElementById('home');
   firebase.database().ref('deqo_logos').on('value', (e) => {
+    let logo = new GradCircle('gradcirc');
     home.innerHTML = '';
     let svgs = e.val();
     for (var key in svgs){
@@ -370,6 +365,12 @@ window.onload = () => {
 
   })
 }
+let test_vue_page = new Vue({
+  el: "#people",
+  data: {
+    test: 'this is a vue page for people'
+  }
+})
 let add = document.getElementById('add');
 add.onclick = async function() {
   let content = null
