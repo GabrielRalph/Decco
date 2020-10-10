@@ -261,9 +261,9 @@ class GradCircle extends SvgElement{
   build(){
     this.groups = [];
 
-    this.groups.push(this.create_stem(new Vector(0, -0.1), 0.8, this.r*1.5, 1));
+    this.groups.push(this.create_stem(new Vector(0, 0), 0.8, this.r*1.5, 1));
     this.groups.push(this.create_grad_circ(new Vector(this.r*2 + 1, 0), new Vector(this.r, 0), -1));
-    this.groups.push(this.create_stem(new Vector(this.r*4 + 2, 0.1), 0.8, this.r*1.5, -1));
+    this.groups.push(this.create_stem(new Vector(this.r*4 + 2, 0), 0.8, this.r*1.5, -1));
     this.groups.push(this.create_grad_circ(new Vector(this.r*6 + 3, 0), new Vector(0,-this.r), 1));
     this.wave();
   }
@@ -296,7 +296,7 @@ class GradCircle extends SvgElement{
         h += 0.15;
         window.requestAnimationFrame(next_2);
       }else{
-        this.create_grad_circ(center.addV(-1*dir*0.1), new Vector(this.r, 0), dir, g.createChild('g'))
+        this.create_grad_circ(center.addV(-1*dir), new Vector(this.r, 0), dir, g.createChild('g'))
       }
     }
     window.requestAnimationFrame(next_1);
