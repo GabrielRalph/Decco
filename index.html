@@ -128,8 +128,8 @@
         return this.move;
       }
     }
-    document.body.appendChild(el)
-    let waveloader = new WaveLoader(el);
+    // document.body.appendChild(el)
+    // let waveloader = new WaveLoader(el);
 
   </script>
   <title>Deqo</title>
@@ -140,13 +140,20 @@
   <div id = "add">
     +
   </div>
+
+
+  <div id = "splash">
+    <svg id = "gradcirc"></svg>
+  </div>
+
+
 <div id = "main">
   <div id = "template" style = "display: none;">
     <div id = "home">
 
     </div>
     <div id = "contact_us">
-      dad@gmail.com
+
     </div>
     <div id = "about_us">
       <div>
@@ -208,6 +215,122 @@
 
 <script>
 
+class GradCircle extends SvgElement{
+  constructor(el){
+    super(el)
+    this.r = 5;
+    this.done = 0;
+    this.props = {viewBox: `-${this.r + 1} -${this.r + 7} ${this.r*2*4 + 5} ${this.r*2 + 14}`}
+    this.build();
+    this.move = true;
+    this.onDone = null;
+  }
+
+  wave(){
+    let next = (t) => {
+      this.groups.forEach((g, i) => {
+        g.style = {
+          transform: `translate(0, ${Math.sin(t/400 + i)}px)`
+        }
+      });
+      if (this.move){
+        window.requestAnimationFrame(next);
+      }else{
+        this.groups.forEach((g, i) => {
+          g.style = {
+            transform: `translate(0, 0)`
+          }
+        });
+      }
+    }
+    window.requestAnimationFrame(next);
+  }
+
+  set done(val){
+    if (val == 4 && this.onDone instanceof Function){
+
+      this.onDone();
+
+    }
+    this._done = val;
+  }
+  get done(){
+    return this._done
+  }
+
+  build(){
+    this.groups = [];
+
+    this.groups.push(this.create_stem(new Vector(0, -0.1), 0.8, this.r*1.5, 1));
+    this.groups.push(this.create_grad_circ(new Vector(this.r*2 + 1, 0), new Vector(this.r, 0), -1));
+    this.groups.push(this.create_stem(new Vector(this.r*4 + 2, 0.1), 0.8, this.r*1.5, -1));
+    this.groups.push(this.create_grad_circ(new Vector(this.r*6 + 3, 0), new Vector(0,-this.r), 1));
+    this.wave();
+  }
+
+  create_stem(center, angle, height, dir = 1, g){
+    g = g == null ? this.createChild('g'): g;
+
+    let zero = new Vector(0, 0);
+    let top_edge = new Vector(this.r, dir * -1 * this.r*Math.cos(angle));
+    let path = g.createChild('path', {fill: '#202020'});
+
+    let h = 0;
+
+    let next_1 = () => {
+      path.clear();
+      path.M(center.addV(-1 * dir *height)).l(top_edge).l(zero.addV(dir*h)).l(zero.sub(top_edge)).Z();
+
+      if (h < height){
+        h += 0.15;
+        window.requestAnimationFrame(next_1);
+      }else{
+        window.requestAnimationFrame(next_2);
+      }
+    }
+
+    let next_2 = () => {
+      path.clear();
+      path.M(center.addV(-1 * dir * height)).l(top_edge).l(zero.addV(dir * h)).L(center).Z();
+      if (h < height - dir * top_edge.y){
+        h += 0.15;
+        window.requestAnimationFrame(next_2);
+      }else{
+        this.create_grad_circ(center.addV(-1*dir*0.1), new Vector(this.r, 0), dir, g.createChild('g'))
+      }
+    }
+    window.requestAnimationFrame(next_1);
+    return g
+
+  }
+
+  create_grad_circ(center, start, dir = 1, g = null){
+    let r = new Vector(this.r);
+    let pos = start;
+    g = g == null ? this.createChild('g'): g;
+
+    let d_theta = 0.049087;
+    let i = 0;
+    let next = () => {
+      let path = g.createChild('path', {
+        fill: `#00000004`,
+      }).M(start.add(center));
+      pos = pos.rotate(dir*d_theta);
+      i++;
+      path.A(r, 0, i>64 ? 1: 0, dir>0?1:0, center.add(pos)).L(center).Z()
+      if (i < 128){
+        window.requestAnimationFrame(next)
+      }else{
+        this.done ++;
+      }
+    }
+    window.requestAnimationFrame(next)
+    return g
+  }
+
+}
+
+let logo = new GradCircle('gradcirc');
 
 let test_vue_page = new Vue({
   el: "#people",
@@ -228,9 +351,23 @@ window.onload = () => {
         <img src = "./bottle_yellow.jpg"/>
       </div>`
     }
-    setTimeout(() => {
-      waveloader.hide = true;
-    }, 20)
+    let done = () => {
+      let splash = document.getElementById('splash');
+      splash.style.setProperty('opacity', '0');
+      splash.style.setProperty('z-index', '0');
+      setTimeout(() => {
+        splash.remove();
+        logo.move = false;
+        console.log('finaly');
+        // document.getElementById('home').appendChild(logo.el)
+      }, 300)
+    }
+    if (logo.done){
+      done()
+    }else{
+      logo.onDone = done
+    }
+
   })
 }
 let add = document.getElementById('add');
@@ -255,6 +392,25 @@ add.onclick = async function() {
 }
 </script>
 <style type="text/css">
+#splash{
+  opacity: 1;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: white;
+  z-index: 1000;
+  transition: 0.3s ease-in;
+}
+#splash svg{
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 70vw;
+}
+
 #add{
   position: fixed;
   bottom: 0;
