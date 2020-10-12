@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <!-- <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900">
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@317&display=swap" rel="stylesheet"> -->
+  <!-- <script src= "https://www.gstatic.com/firebasejs/7.14.4/firebase.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+  <script src = "https://www.svg.plus/load.js"></script> -->
+  <!-- <script src = "./main.js"></script> -->
+<script src = "./svgPlus.js"></script>
+<script src = "https://www.svg.plus/vector.js"></script>
+  <title>Deqo</title>
+
+
+</head>
+<body>
+</body>
+
+<script>
+  let elem = SVGPlus.create('svg');
+  console.log(elem);
+  elem.props = {
+    style: {
+      background: 'white'
+    }
+  }
+  class GradCircle{
+    constructor(el){
+      el.r = 5;
+      el.stem_height = 1.3 * el.r;
+                                  // o deg
+      el.stem_angle = Math.PI* ( 60 ) /180
+      el.precision = 40;
+
+      el.done = 0;
+      el.props = {viewBox: `-${el.r + 1} -${el.r + 7} ${el.r*2*4 + 5} ${el.r*2 + 14}`}
+      el.amp = 1;
+
+      el.build();
+
+      el.move = true;
+      el.onDone = null;
+    }
+
+    wave(){
+      let next = (t) => {
+        this.groups.forEach((g, i) => {
+          // console.log(g);
+          g.styles = {
+            transform: `translate(0, ${this.amp*Math.sin(t/400 + i)}px)`
+          }
+        });
+        if (this.move){
+          window.requestAnimationFrame(next);
+        }else{
+          this.groups.forEach((g, i) => {
+            g.style = {
+              transform: `translate(0, 0)`
+            }
+          });
+        }
+      }
+      window.requestAnimationFrame(next);
+    }
+
+    set done(val){
+      if (val == 4 && this.onDone instanceof Function){
+
+        this.onDone();
+
+      }
+      this._done = val;
+    }
+    get done(){
+      return this._done
+    }
+
+    build(){
+      this.groups = [];
+
+      this.groups.push(this.create_stem(new Vector(0, 0)));
+      this.groups.push(this.create_grad_circ(new Vector(this.r*2 + 1, 0), new Vector(this.r, 0), -1));
+      this.groups.push(this.create_stem(new Vector(this.r*4 + 2, 0), -1));
+      this.groups.push(this.create_grad_circ(new Vector(this.r*6 + 3, 0), new Vector(0,-this.r), 1));
+      this.wave();
+    }
+
+    create_stem(center, dir = 1){
+      let g = this.createChild('g');
+
+      let top_left = new Vector(0, - dir * this.stem_height);
+      top_left = center.add(top_left);
+
+      let top_right = new Vector(this.r, - dir * this.stem_height * (1 + Math.cos(this.stem_angle)));
+      top_right = center.add(top_right);
+
+      let path = g.createChild('path', {fill: '#101010ef'});
+
+      let h1 = 0;
+      let dh1 = this.stem_height * (1 + Math.cos(this.stem_angle)) / this.precision;
+      let h2 = 0;
+      let dh2 = this.stem_height / this.precision;
+
+      let next_1 = () => {
+        path.clear();
+        path.M(top_left).L(top_right).L(top_right.addV(h1*dir).round(5)).L(top_left.addV(h2*dir).round(5)).Z();
+        if (h2 == this.stem_height){
+              this.create_grad_circ(center.addV(-0.05*dir), new Vector(this.r, 0), dir, g.createChild('g'))
+        }else{
+          h1 = Math.min(h1 + dh1, this.stem_height * (1 + Math.cos(this.stem_angle)));
+          h2 = Math.min(h2 + dh2, this.stem_height);
+          window.requestAnimationFrame(next_1);
+        }
+      }
+
+      window.requestAnimationFrame(next_1);
+      return g
+
+    }
+
+    create_grad_circ(center, start, dir = 1, g = null){
+      let r = new Vector(this.r);
+      let pos = start;
+      g = g == null ? this.createChild('g'): g;
+
+      let d_theta = 0.049087;
+      let i = 0;
+      let next = () => {
+        let path = g.createChild('path', {
+          fill: `#00000004`,
+        }).M(start.add(center));
+        pos = pos.rotate(dir*d_theta);
+        i++;
+        path.A(r, 0, i>64 ? 1: 0, dir>0?1:0, center.add(pos)).L(center).Z()
+        if (i < 128){
+          window.requestAnimationFrame(next)
+        }else{
+          this.done ++;
+        }
+      }
+      window.requestAnimationFrame(next)
+      return g
+    }
+
+  }
+
+  class Test{
+    constructor(el){
+      el.props = {
+        fill: 'blue'
+      }
+    }
+    set em(val){
+      this._em = val/10;
+
+    }
+    get em(){
+      return this._em;
+    }
+
+    puta(){
+      return this.M(new Vector(0, 0))
+    }
+  }
+  // let path = elem.createChild('path');
+  elem.extend(GradCircle);
+  setTimeout(() => {
+    let nxt = () => {
+      elem.amp -= 0.01;
+      if (elem.amp > 0){
+        window.requestAnimationFrame(nxt);
+      }
+    }
+    window.requestAnimationFrame(nxt);
+
+  }, 2000)
+  // console.log(elem.build);
+  // let keys = Object.getOwnPropertyNames(Test.prototype);
+  // console.log(keys);
+  // keys.forEach((key) => {
+  //   if (key == 'constructor'){
+  //     new Test.prototype.constructor(path);
+  //   }else{
+  //     var ee = Object.getOwnPropertyDescriptor(Test.prototype,key);
+  //     console.log(ee);
+  //     Object.defineProperty(path, key, ee);
+  //   }
+  // })
+  document.body.appendChild(elem)
+  // path.em = 66;
+  // console.log(path.em);
+  // path._d = new DPath(path.getAttribute('d'));
+  // Object.defineProperty(path, 'd', {
+  //   set: function(val){
+  //     this.d.d_string = val;
+  //   },
+  //   get: function(){
+  //     return this._d;
+  //   }
+  // })
+  // path.d.addUpdateListener(() => {
+  //   path.setAttribute('d', path.d+'')
+  // })
+  // let keys = Object.getOwnPropertyNames(DPath.prototype);
+  // document.body.appendChild(elem)
+  // keys.forEach((key) => {
+  //   let func = DPath.prototype[key];
+  //   if (func instanceof Function){
+  //     path[key] = function(arg){
+  //       this.d[key].apply(this.d, arguments)
+  //       return this
+  //     };
+  //   }
+  // })
+  // console.log({x: path});
+  // path.M(new Vector(44, 3)).L(new Vector(100, 100)).l(new Vector(-50, -50))
+  // path.d = "M0,0L50,50L0,50"
+  // let svg = SVGPlus.make('svg');
+  // svg.build = function() {
+  //   console.log(this.getAttribute('viewBox'));
+  // }
+  // let pos_set = function(val){
+  //   if (val instanceof Vector){
+  //     this.props = {
+  //       style: {
+  //         top: val.x + 'px',
+  //         left: val.y + 'px',
+  //         position: 'fixed'
+  //       }
+  //     }
+  //   }
+  // }
+  // let make = function(elem){
+  //   elem._props = {};
+  //   elem._styles = {};
+  //   Object.defineProperty(elem, 'styles', {
+  //     get : function(){
+  //       return this._styles;
+  //     },
+  //     set: function(val){
+  //       if (typeof val != 'object'){
+  //         throw `not an object`;
+  //         return
+  //       }
+  //       for (var key in val){
+  //         let style = val[key];
+  //         if (typeof style == 'string' || typeof style == 'number'){
+  //           this.style.setProperty(key, style);
+  //           this._styles[key] = style;
+  //         }
+  //       }
+  //     }
+  //   })
+  //   Object.defineProperty(elem, 'props', {
+  //     get : function(){
+  //       return this._props;
+  //     },
+  //     set: function(val){
+  //       if (typeof val != 'object'){
+  //         throw `not an object`;
+  //         return
+  //       }
+  //       for (var key in val){
+  //         let att = val[key];
+  //         if (typeof att == 'string' || typeof att == 'number'){
+  //           this.setAttribute(key, att);
+  //           this._props[key] = att;
+  //         }else if(key == 'style' || key == 'styles' && typeof att == 'object'){
+  //           this.styles = att;
+  //         }
+  //       }
+  //     }
+  //   })
+  //   // Object.defineProperty(elem, 'pos', {
+  //   //   set: pos_set
+  //   // })
+  //   return elem;
+  // }
+
+
+
+//   let svg_elem = make(svg);
+//   // svg_elem.style = {
+//   //   background: 'red'
+//   // }
+//   document.body.appendChild(svg_elem)
+//   svg_elem.props = {
+//     fill: 'red',
+//     viewBox: '0 0 50 20',
+//     style: {
+//       background: 'green'
+//     }
+//   }
+//   // svg_elem.viewBox = '0 0 20 3'
+//   console.log(svg_elem.style);
+//   class SvgTest{
+//     set sss(v){
+//       this.s = v/3;
+//       console.log('x');
+//     }
+//     get sss(){
+//       return this.s
+//     }
+//
+//     set_pos(val){
+//       if (val instanceof Vector){
+//         this.props = {
+//           style: {
+//             top: val.x + 'px',
+//             left: val.y + 'px',
+//             position: 'fixed'
+//           }
+//         }
+//       }
+//     }
+//   }
+//   // }
+//   function getAllFuncs(toCheck, elem) {
+//     var props = [];
+//     var obj = toCheck;
+//     do {
+//         props = props.concat(Object.getOwnPropertyNames(obj));
+//     } while (obj = Object.getPrototypeOf(obj));
+//     props.forEach((e) => {
+//       if(toCheck[e] instanceof Function){
+//         console.log(toCheck[e]);
+//       }
+//     })
+// }
+//
+// // getAllFuncs(new SvgTest(), svg_elem)
+// let obj  = new SvgTest();
+// // let xxx = obj.__proto__;
+// console.log(obj.__proto__);
+// console.log(Object.getOwnPropertyNames(obj.__proto__));
+// let d = {}
+// Object.defineProperty(svg_elem, 'pos', {
+//   set: obj.set_pos
+// })
+// svg_elem.pos = new Vector(44, 44)
+
+// console.log(Object.getProperties(obj));
+// for (var key in Object.getPrototypeOf(obj)){
+//   console.log(key);
+// }
+
+// Object.defineProperty(svg_elem, 'pos', {
+//   set: obj.__proto__.set_pos
+// })
+// svg_elem.pos = new Vector(303, 40)
+
+// let p = new SvgTest();
+// let svgg = Object.assign(svg, p.prototype)
+// console.log(getAllFuncs(p));
+// console.log({x:svgg});
+  // Object.defineProperty(svg, 'props', {
+  //   set: function(val){
+  //     console.log(val);
+  //     this._props = val + 'set';
+  //   },
+  //   get :function(){
+  //     return this._props;
+  //   }
+  // })
+  // svg.props = 'hello';
+  // console.log(svg.props);
+  // console.log({svg:svg});
+  // svg.build();
+
+</script>
+<style type="text/css">
+
+</style>
+
+
+</html>
