@@ -140,7 +140,21 @@ let SVGPlus = {
         }
       })
       elem.clear = function(){
-        elem.d.clear()
+        elem.d.clear();
+      },
+      elem.push = function(){
+        elem.d.push();
+        return this;
+      }
+      elem.queue = function(){
+        elem.d.queue();
+        return this;
+      }
+      elem.pop = function(){
+        return  elem.d.pop()
+      }
+      elem.dequeue = function(){
+        return elem.d.dequeue()
       }
     }
     return elem;
