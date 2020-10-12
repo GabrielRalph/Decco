@@ -197,7 +197,8 @@ class DeqoLogo{
     let pos = start;
     g = g == null ? this.createChild('g'): g;
 
-    let d_theta = 0.049087;
+    let res = 80;
+    let d_theta = 2*Math.PI/80;
     let i = 0;
     let next = () => {
       let path = g.createChild('path', {
@@ -205,8 +206,8 @@ class DeqoLogo{
       }).M(start.add(center));
       pos = pos.rotate(dir*d_theta);
       i++;
-      path.A(r, 0, i>64 ? 1: 0, dir>0?1:0, center.add(pos)).L(center).Z()
-      if (i < 128){
+      path.A(r, 0, i>res/2 ? 1: 0, dir>0?1:0, center.add(pos)).L(center).Z()
+      if (i < res){
         window.requestAnimationFrame(next)
       }else{
         this.done ++;
@@ -225,7 +226,8 @@ logo.onDone = () => {
   splash.styles = {opacity: 0}
   setTimeout(() => {
     document.getElementById('logo-box').prepend(logo)
-  })
+    splash.styles = {display: 'none'}
+  }, 200)
 }
 
 window.onload = () => {
