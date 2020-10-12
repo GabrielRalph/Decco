@@ -893,7 +893,7 @@ class DPath extends LinkList{
       laf = this.__boolHelp(laf);
       sf = this.__boolHelp(sf);
       if (r instanceof Vector && v1 instanceof Vector && xar != null && laf != null && sf != null){
-        this.push(new CPoint(`A${r},${xar},${laf},${sf},${v1}`))
+        this.push(new CPoint(`A${r.round(5)},${xar},${laf},${sf},${v1.round(5)}`))
         return this
       }else{
         throw 'Error:\nA takes the parameters:\nr: Vector\nx-axis-rotation: Boolean (1,0)/(true,false)\nlarge-arc-flag: Boolean\nsweep-flag: Boolean\nv: Vector';
