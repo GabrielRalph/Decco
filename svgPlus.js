@@ -174,7 +174,7 @@ let SVGPlus = {
     }
   },
   make: function(name){
-    if (`animate animateMotion animateTransform circle clipPath
+    if (` animate animateMotion animateTransform circle clipPath
       color-profile defs desc discard ellipse feBlend feColorMatrix
       feComponentTransfer feComposite feConvolveMatrix feDiffuseLighting
       feDisplacementMap feDistantLight feDropShadow feFlood feFuncA
@@ -184,7 +184,7 @@ let SVGPlus = {
       line linearGradient marker mask mesh meshgradient meshpatch meshrow
       metadata mpath path pattern polygon polyline radialGradient rect
       script set solidcolor stop style svg switch symbol text textPath
-      title tspan unknown use view`.indexOf(name) != -1){
+      title tspan unknown use view `.indexOf(` ${name} `) != -1){
       return document.createElementNS("http://www.w3.org/2000/svg", name);
 
     }else{
@@ -248,7 +248,6 @@ let SVGPlus = {
   extend: function(elem, extension){
     let keys = Object.getOwnPropertyNames(extension.prototype);
     keys.forEach((key) => {
-      console.log(key);
       if (key == 'constructor'){
       }else{
         if (key in elem){

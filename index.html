@@ -6,132 +6,12 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900">
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@317&display=swap" rel="stylesheet">
-  <script src= "https://www.gstatic.com/firebasejs/7.14.4/firebase.js"></script>
+  <!-- <script src= "https://www.gstatic.com/firebasejs/7.14.4/firebase.js"></script> -->
   <script src="https://cdn.jsdelivr.net/npm/vue"></script>
-  <script src = "https://www.svg.plus/load.js"></script>
-  <script src = "./main.js"></script>
-  <script>
-    let el = document.createElement('div');
-    class WaveLoader extends PlusElement{
-      constructor(el){
-        super(el);
+  <script src = "https://www.svg.plus/vector.js"></script>
+  <script src = "./svgPlus.js"></script>
+  <script src = "./window.js"></script>
 
-
-        //Bounding box
-        this.style = {
-          position: 'fixed',
-          top: '-5px',
-          left: '-5px',
-          right: '-5px',
-          bottom: '-5px',
-          'z-index': '1000',
-        };
-
-        // Svg to contain wave
-        this.path = this.createChild('svg', {
-          viewBox: '-1 -2 8.3 4',
-          style: {
-            position: 'fixed',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-          }
-
-        // Wave path
-        }).createChild('path', {
-          fill: 'none',
-          'stroke-linecap': 'round',
-          'stroke-width': 0.4
-        })
-
-        //Main propertys
-        this.color = 'black'
-        this.background = 'white'
-
-        // Show on creation
-        this.hide = false;
-      }
-
-      //Setters and Getters for main properties
-      set background(color){
-        this.style = {
-          background: color
-        }
-      }
-      get background(){
-        return this.getProperty('color')
-      }
-
-      set color(color){
-        this.path.props = {
-          stroke: color
-        }
-      }
-      get color(){
-        return this.path.getAttribute('stroke');
-      }
-
-      //Wave animater frame function
-      __wave_animater(t0){
-        let x0 = t0/400;
-        this.path.clear();
-        let y = (xi, x0i) => {
-          let yal = (Math.sin(xi + x0i) + Math.sin(xi * 1.61 * Math.sin(xi/5))/5)/2;
-          let vec = new Vector(xi, yal);
-
-          vec.round();
-          return vec
-        };
-        this.path.M(y(0, x0));
-        for(var x = 0; x < 2*Math.PI; x += 0.05){
-          this.path.L(y(x, x0));
-        }
-      }
-
-      //Setters and Getters for wave loader states
-      set hide(val){
-        if (!('_hide' in this)) this._hide = !val;
-        if (val && (!this._hide)){
-          this.style = {
-            display: 'none'
-          }
-          this.move = false;
-          this._hide = true;
-        }else if ((!val) && this._hide){
-          this.style = {
-            display: 'block'
-          }
-          this.move = true;
-          this._hide = false;
-        }
-      }
-      get hide(){
-        return this._hide
-      }
-
-      set move(val){
-        if (!('_move' in this)){ this._move = !val;}
-        if (val && !this._move){
-          let next = (t0) => {
-            this.__wave_animater(t0);
-            if (this._move){
-              window.requestAnimationFrame(next);
-            }
-          }
-          window.requestAnimationFrame(next);
-          this._move = true;
-        }else{
-          this._move = false
-        }
-      }
-      get move(){
-        return this.move;
-      }
-    }
-    // document.body.appendChild(el)
-    // let waveloader = new WaveLoader(el);
-
-  </script>
   <title>Deqo</title>
 
 
@@ -148,9 +28,12 @@
 
 
 <div id = "main">
-  <div id = "template" style = "display: none;">
+  <div id = "templates" style = "display: none;">
     <div id = "home">
+      <div id = "logo-box">
 
+        <img src = "./bottle_yellow.jpg"/>
+      </div>
     </div>
     <div id = "contact_us">
 
@@ -214,34 +97,34 @@
 </body>
 
 <script>
-
-class GradCircle extends SvgElement{
+class DeqoLogo{
   constructor(el){
-    super(el)
-    this.r = 5;
-    this.stem_height = 1.3 * this.r;
+    el.r = 5;
+    el.stem_height = 1.3 * el.r;
                                 // o deg
-    this.stem_angle = Math.PI* ( 60 ) /180
-    this.precision = 40;
+    el.stem_angle = Math.PI* ( 60 ) /180
+    el.precision = 40;
 
-    this.done = 0;
-    this.props = {viewBox: `-${this.r + 1} -${this.r + 7} ${this.r*2*4 + 5} ${this.r*2 + 14}`}
+    el.done = 0;
+    el.props = {viewBox: `-${el.r + 1} -${el.r + 7} ${el.r*2*4 + 5} ${el.r*2 + 14}`}
+    el.amp = 1.3;
 
+    el.build();
 
-    this.build();
-
-    this.move = true;
-    this.onDone = null;
+    el.move = true;
+    el.onDone = null;
   }
 
   wave(){
     let next = (t) => {
       this.groups.forEach((g, i) => {
-        g.style = {
-          transform: `translate(0, ${Math.sin(t/400 + i)}px)`
+        // console.log(g);
+        g.styles = {
+          transform: `translate(0, ${this.amp*Math.sin(t/400 + i)}px)`
         }
       });
-      if (this.move){
+      this.amp -= this.move ? 0 : 0.01;
+      if (this.amp > 0){
         window.requestAnimationFrame(next);
       }else{
         this.groups.forEach((g, i) => {
@@ -285,7 +168,7 @@ class GradCircle extends SvgElement{
     let top_right = new Vector(this.r, - dir * this.stem_height * (1 + Math.cos(this.stem_angle)));
     top_right = center.add(top_right);
 
-    let path = g.createChild('path', {fill: '#202020'});
+    let path = g.createChild('path', {fill: '#101010ef'});
 
     let h1 = 0;
     let dh1 = this.stem_height * (1 + Math.cos(this.stem_angle)) / this.precision;
@@ -294,7 +177,6 @@ class GradCircle extends SvgElement{
 
     let next_1 = () => {
       path.clear();
-      console.log('e');
       path.M(top_left).L(top_right).L(top_right.addV(h1*dir).round(5)).L(top_left.addV(h2*dir).round(5)).Z();
       if (h2 == this.stem_height){
             this.create_grad_circ(center.addV(-0.05*dir), new Vector(this.r, 0), dir, g.createChild('g'))
@@ -335,41 +217,50 @@ class GradCircle extends SvgElement{
   }
 
 }
-
-
+let splash = SVGPlus.SVGElementToSVGPlusElement(document.getElementById('splash'));
+let logo = SVGPlus.SVGElementToSVGPlusElement(document.getElementById('gradcirc'));
+logo.extend(DeqoLogo);
+logo.onDone = () => {
+  logo.move = false;
+  splash.styles = {opacity: 0}
+  setTimeout(() => {
+    document.getElementById('logo-box').prepend(logo)
+  })
+}
 
 window.onload = () => {
-  let panels = new Windows('main');
+  // let panels = new Windows('main');
+  let windows = SVGPlus.SVGElementToSVGPlusElement(document.getElementById('main'));
+  windows.extend(Windows)
+  // let home = document.getElementById('home');
+  // firebase.database().ref('deqo_logos').on('value', (e) => {
+  //   let logo = new GradCircle('gradcirc');
+  //   home.innerHTML = '';
+  //   let svgs = e.val();
+  //   for (var key in svgs){
+  //     home.innerHTML += `<div>
+  //       ${svgs[key]}
+  //       <img src = "./bottle_yellow.jpg"/>
+  //     </div>`
+  //   }
+  //   let done = () => {
+  //     let splash = document.getElementById('splash');
+  //     splash.style.setProperty('opacity', '0');
+  //     splash.style.setProperty('z-index', '0');
+  //     setTimeout(() => {
+  //       splash.remove();
+  //       logo.move = false;
+  //       console.log('finaly');
+  //       // document.getElementById('home').appendChild(logo.el)
+  //     }, 300)
+  //   }
+  //   if (logo.done){
+  //     done()
+  //   }else{
+  //     logo.onDone = done
+  //   }
 
-  let home = document.getElementById('home');
-  firebase.database().ref('deqo_logos').on('value', (e) => {
-    let logo = new GradCircle('gradcirc');
-    home.innerHTML = '';
-    let svgs = e.val();
-    for (var key in svgs){
-      home.innerHTML += `<div>
-        ${svgs[key]}
-        <img src = "./bottle_yellow.jpg"/>
-      </div>`
-    }
-    let done = () => {
-      let splash = document.getElementById('splash');
-      splash.style.setProperty('opacity', '0');
-      splash.style.setProperty('z-index', '0');
-      setTimeout(() => {
-        splash.remove();
-        logo.move = false;
-        console.log('finaly');
-        // document.getElementById('home').appendChild(logo.el)
-      }, 300)
-    }
-    if (logo.done){
-      done()
-    }else{
-      logo.onDone = done
-    }
-
-  })
+  // })
 }
 let test_vue_page = new Vue({
   el: "#people",
@@ -377,26 +268,26 @@ let test_vue_page = new Vue({
     test: 'this is a vue page for people'
   }
 })
-let add = document.getElementById('add');
-add.onclick = async function() {
-  let content = null
-  try{
-    content = await navigator.clipboard.readText();
-  }catch(e){
-    throw e
-    return
-  }
-  let svg = null
-  try{
-    svg = new SvgElement(content)
-  }catch(e){
-    alert('Invalid SVG');
-    throw e;
-    return
-  }
-  document.getElementById('home').appendChild(svg.el);
-  svg.fireSave(['deqo_logos']);
-}
+// let add = document.getElementById('add');
+// add.onclick = async function() {
+//   let content = null
+//   try{
+//     content = await navigator.clipboard.readText();
+//   }catch(e){
+//     throw e
+//     return
+//   }
+//   let svg = null
+//   try{
+//     svg = new SvgElement(content)
+//   }catch(e){
+//     alert('Invalid SVG');
+//     throw e;
+//     return
+//   }
+//   document.getElementById('home').appendChild(svg.el);
+//   svg.fireSave(['deqo_logos']);
+// }
 </script>
 <style type="text/css">
 #splash{

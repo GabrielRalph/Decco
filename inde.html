@@ -10,16 +10,32 @@
   <script src="https://cdn.jsdelivr.net/npm/vue"></script>
   <script src = "https://www.svg.plus/load.js"></script> -->
   <!-- <script src = "./main.js"></script> -->
-<script src = "./svgPlus.js"></script>
+  <script src = "./svgPlus.js"></script>
+<script src = "./window.js"></script>
 <script src = "https://www.svg.plus/vector.js"></script>
   <title>Deqo</title>
 
 
 </head>
 <body>
+  <div id = "windows">
+    <div id = "templates">
+      <div id = "hello">
+        world
+      </div>
+      <div id = "home">
+        Welcome
+      </div>
+      <div id = "hose">
+        Hosery
+      </div>
+    </div>
+  </div>
 </body>
 
 <script>
+  let windows = SVGPlus.SVGElementToSVGPlusElement(document.getElementById('windows'));
+  windows.extend(Windows)
   let elem = SVGPlus.create('svg');
   console.log(elem);
   elem.props = {
@@ -372,7 +388,68 @@
 
 </script>
 <style type="text/css">
+  .window{
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    padding-top: var(--nav-height);
+    color: black;
+    overflow: scroll;
+  }
 
+  #navigator{
+    --nav-height: max(min(6vw, 50px), 30px);
+    --font-size: calc(var(--nav-height) * 0.3);
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 50%;
+    z-index: 100;
+    /* background: #fff8; */
+    padding: 0;
+  }
+  #navigator > div{
+    position: relative;
+  }
+  #navigator table{
+    width: 100%;
+    text-align: center;
+    border-collapse: collapse;
+    padding: 0;
+  }
+  #navigator td{
+    height: var(--nav-height);
+    padding: 0;
+  }
+  #navigator h1{
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 0;
+    line-height: var(--nav-height);
+    font-size:  calc((var(--font-size))*2);
+    padding-right: calc(var(--nav-height)/2);
+    cursor: pointer;
+    transform: translate(-100%, 0);
+  }
+  /*
+  @media screen and (max-width: 900px) {
+    #navigator a {
+       font-size: 18px;
+    }
+  } */
+  #navigator a{
+    font-family: Roboto;
+    font-weight: 500;
+    text-decoration: none;
+    color: black;
+    font-size: var(--font-size);
+    line-height: var(--nav-height);
+    text-transform: uppercase;
+        display: grid;
+  }
 </style>
 
 
